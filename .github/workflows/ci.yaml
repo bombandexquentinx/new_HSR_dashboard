@@ -33,7 +33,7 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
-        run: npm ci
+        run: npm ci --legacy-peer-deps
 
       - name: Lint
         run: npm run lint
@@ -53,14 +53,12 @@ jobs:
         env:
           CI: true
         run: |
-          # Ensure start-server-and-test is available (it's a dep in your scripts usage; if not, this installs it temporarily)
+          # Ensure start-server-and-test is available
           if ! npx --yes start-server-and-test --version >/dev/null 2>&1; then
             npm i -D start-server-and-test
           fi
 
           # Start Vite dev server and run Cypress headless against it
-          # Your dev script: vite --host -> defaults to port 5173
-          # We use wait-on http-get URL to confirm readiness
           npx start-server-and-test \
             "npm run dev" \
             http://localhost:5173 \
