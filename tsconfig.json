@@ -1,29 +1,4 @@
 {
-<<<<<<< HEAD
-  "compilerOptions": {
-    "module": "commonjs",
-    "esModuleInterop": true,
-    "target": "es6",
-    "moduleResolution": "node",
-    "removeComments": true,
-    "sourceMap": false,
-
-    "outDir": "./dist",
-    "rootDir": "./src",
-    "resolveJsonModule": true,
-
-    "skipLibCheck": true,
-    "allowJs": true,
-    // "checkJs": true,
-    
-    "strict": false,
-    "types": ["jest", "node"]
-  },
-  "include": ["src"],
-  "exclude": ["node_modules", "dist/*", "src/static"],
-  "lib": ["es6"]
-}
-=======
   "files": [],
   "references": [
     { "path": "./tsconfig.app.json" },
@@ -42,4 +17,3 @@
     "strictNullChecks": false
   }
 }
->>>>>>> a76a916f9cbaffd03d46ee70c1942ae7a76f4f32
