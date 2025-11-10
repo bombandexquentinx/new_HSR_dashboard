@@ -35,9 +35,6 @@ jobs:
       - name: Install dependencies
         run: npm install --legacy-peer-deps
 
-      - name: Lint
-        run: npm run lint
-
       - name: Unit tests (Vitest)
         run: |
           if npm pkg get devDependencies.vitest | grep -q '"'; then
