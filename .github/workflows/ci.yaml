@@ -1,0 +1,75 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+      - development
+  pull_request:
+    branches:
+      - main
+      - development
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    concurrency:
+      group: ci-${{ github.workflow }}-${{ github.ref }}
+      cancel-in-progress: true
+
+    strategy:
+      matrix:
+        node: [20]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node ${{ matrix.node }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Unit tests (Vitest)
+        run: |
+          if npm pkg get devDependencies.vitest | grep -q '"'; then
+            npx vitest run --coverage --reporter=default
+          else
+            echo "Vitest not found; skipping unit tests."
+          fi
+
+      - name: Build
+        run: npm run build
+
+      - name: E2E tests (Cypress on Vite dev server)
+        env:
+          CI: true
+        run: |
+          # Ensure start-server-and-test is available
+          if ! npx --yes start-server-and-test --version >/dev/null 2>&1; then
+            npm i -D start-server-and-test
+          fi
+
+          # Start Vite dev server and run Cypress headless against it
+          npx start-server-and-test \
+            "npm run dev" \
+            http://localhost:5173 \
+            "CYPRESS_baseUrl=http://localhost:5173 npm run cy:run-e2e"
+
+      - name: Upload Cypress artifacts on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cypress-artifacts
+          path: |
+            cypress/screenshots
+            cypress/videos
+          if-no-files-found: ignore
